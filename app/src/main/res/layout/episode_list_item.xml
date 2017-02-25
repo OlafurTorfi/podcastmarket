@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/touch_selector"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingBottom="@dimen/list_item_padding_vertical"
+    android:paddingLeft="@dimen/list_item_padding_horizontal"
+    android:paddingRight="@dimen/list_item_padding_horizontal"
+    android:paddingTop="@dimen/list_item_padding_vertical">
+    <TextView
+        android:id="@+id/episode_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/list_item_date_left_margin"
+        android:layout_marginStart="@dimen/list_item_date_start_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintLeft_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/episode_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/secondary_text"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteY="37dp"
+        tools:layout_editor_absoluteX="0dp"
+        app:layout_constraintGuide_begin="37dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tag="@string/download_episode_button_tag"
+        app:srcCompat="@mipmap/ic_download"
+
+        android:id="@+id/downloadEpisode"
+        app:layout_constraintRight_toLeftOf="parent"
+        tools:layout_editor_absoluteY="0dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:tag="@string/delete_episode_button_tag"
+        app:srcCompat="@mipmap/ic_delete"
+        android:id="@+id/deleteEpisode"
+        tools:layout_editor_absoluteY="0dp"
+        app:layout_constraintRight_toLeftOf="@+id/episode_title"
+        android:layout_marginEnd="8dp" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        app:srcCompat="@mipmap/ic_play"
+        android:id="@+id/playNow"
+        android:tag="@string/play_button_tag"
+        app:layout_constraintTop_toTopOf="@+id/deleteEpisode"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@+id/deleteEpisode"
+        android:layout_marginEnd="8dp" />
+</android.support.constraint.ConstraintLayout>
