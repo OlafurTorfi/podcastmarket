@@ -16,9 +16,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
+import com.olafurtorfi.www.podcastmarket.activities.SettingsActivity;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
 import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncUtil;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mPosition = RecyclerView.NO_POSITION;
 
     private ProgressBar mLoadingIndicator;
+    private TextView mErrorMessage;
 
 
     @Override
@@ -84,18 +90,59 @@ public class MainActivity extends AppCompatActivity implements
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
-                            .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
-                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
-                                    new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()))
+                            .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build()))
                             .build(),
                     RC_SIGN_IN);
         }
+    }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // RC_SIGN_IN is the request code you passed into startActivityForResult(...) when starting the sign in flow.
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
 
+            // Successfully signed in
+            if (resultCode == ResultCodes.OK) {
+                initializeView();
+                finish();
+                return;
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    showError("null response from signin, was it cancelled?");
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showError("could not sign in because of NO_NETWORK error");
+                    return;
+                }
+
+                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    showError("This code is baffled by this unknown error");
+                    return;
+                }
+            }
+
+            showError("The code does not recognise this response, error code: " + response.getErrorCode());
+        }
+    }
+    private void showError(String message){
+        mErrorMessage = (TextView) findViewById(R.id.error_message);
+        mErrorMessage.setText(message);
+        mErrorMessage.setVisibility(View.VISIBLE);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_podcast);
+        mRecyclerView.setVisibility(View.GONE);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mLoadingIndicator.setVisibility(View.GONE);
     }
 
     private void initializeView() {
+        mErrorMessage = (TextView) findViewById(R.id.error_message);
+        mErrorMessage.setVisibility(View.GONE);
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.

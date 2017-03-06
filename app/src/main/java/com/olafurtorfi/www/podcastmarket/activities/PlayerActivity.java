@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket;
+package com.olafurtorfi.www.podcastmarket.activities;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.olafurtorfi.www.podcastmarket.EpisodeActivity;
+import com.olafurtorfi.www.podcastmarket.R;
 import com.olafurtorfi.www.podcastmarket.data.BreakpointContract;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeObject;

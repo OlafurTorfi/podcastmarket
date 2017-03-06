@@ -42,10 +42,11 @@
         </service>
 
         <activity android:name=".EpisodeActivity" />
-        <activity android:name=".PlayerActivity" />
+        <activity android:name=".activities.PlayerActivity" />
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".activities.ListActivity"></activity>
     </application>
 
 </manifest>
