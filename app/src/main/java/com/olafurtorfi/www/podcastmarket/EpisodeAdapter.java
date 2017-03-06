@@ -148,8 +148,9 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.EpisodeA
             String podcast = mCursor.getString(EpisodeActivity.INDEX_EPISODE_PODCAST);
             String filePath = mCursor.getString(EpisodeActivity.INDEX_EPISODE_FILE_PATH);
             String fileUrl = mCursor.getString(EpisodeActivity.INDEX_EPISODE_FILE_URL);
+            String author = mCursor.getString(EpisodeActivity.INDEX_EPISODE_AUTHOR);
 
-            EpisodeObject episodeObject = new EpisodeObject(title, description, podcast, filePath, fileUrl);
+            EpisodeObject episodeObject = new EpisodeObject(title, description, podcast, filePath, fileUrl, author);
 
             mClickHandler.onClick(episodeObject, tag);
         }

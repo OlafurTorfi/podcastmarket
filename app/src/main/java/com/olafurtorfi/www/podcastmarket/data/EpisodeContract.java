@@ -19,12 +19,12 @@ public class EpisodeContract {
 
     /*
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
-     * the content provider for Sunshine.
+     * the content provider for PodcastMarket.
      */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     /*
-     * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that Sunshine
+     * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that PodcastMarket
      * can handle. For instance,
      *
      *     content://com.olafurtorfi.www.episode/episode/
@@ -72,6 +72,7 @@ public class EpisodeContract {
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_PODCAST = "podcast";
+        public static final String COLUMN_AUTHOR = "author";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_FILE_PATH = "path";
         public static final String COLUMN_FILE_URL = "url";
@@ -81,14 +82,14 @@ public class EpisodeContract {
          * This is used to query details about a single episode entry by date. This is what we
          * use for the detail view query. We assume a normalized date is passed to this method.
          *
-         * @param podcastId Normalized date in milliseconds
+         * @param podcast title
          * @return Uri to query details about a single episode entry
          */
-        public static Uri buildEpisodeUriWithPodcast(long podcastId) {
-            Log.v("EpisodeContract", "Podcast Id: " + podcastId);
+        public static Uri buildEpisodeUriWithPodcast(String podcast) {
+            Log.v("EpisodeContract", "Podcast Title: " + podcast);
             return CONTENT_URI.buildUpon()
                     .appendPath(PATH_PODCAST)
-                    .appendPath(String.valueOf(podcastId))
+                    .appendPath(String.valueOf(podcast))
                     .build();
         }
         public static Uri buildEpisodeUriWithId(long id) {

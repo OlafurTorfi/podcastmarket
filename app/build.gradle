@@ -25,18 +25,21 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.1'
-
-    compile 'com.android.support:recyclerview-v7:+'
-
-    compile 'com.firebase:firebase-jobdispatcher:0.5.0'
-
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
 
     // https://mvnrepository.com/artifact/com.rometools/rome
     compile group: 'com.rometools', name: 'rome', version: '1.7.0'
 
 //    compile 'yarfraw:yarfraw:0.92'
 
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.firebase:firebase-jobdispatcher:0.5.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.google.firebase:firebase-database:10.2.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.firebaseui:firebase-ui-auth:1.2.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'

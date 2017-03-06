@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
@@ -56,39 +57,49 @@ public class PodcastSyncTask {
             Log.v(TAG, "syncPodcast: " + feed);
 
             String author = ifNullMakeEmptyString(feed.getAuthor());
-            String title = ifNullMakeEmptyString(feed.getTitle());
-            String description = ifNullMakeEmptyString(feed.getDescription());
-            Log.d(TAG, "syncPodcast: title" + title + ", author: " + author + ", description: " + description);
-            ContentValues cv = new ContentValues();
-            cv.put("title", title);
-            cv.put("description", description);
-            cv.put("author", author);
-            Uri uri = context.getContentResolver().insert(PodcastContract.PodcastEntry.CONTENT_URI, cv);
-            String podcastId = uri.getLastPathSegment();
-            Log.d(TAG, "syncPodcast: last path segment, aka podcast id" + podcastId);
 
-            List<SyndEntry> entries = feed.getEntries();
-            String eTitle = "";
-            String ePodcast = ifNullMakeEmptyString(podcastId);
-            String eDescription = "";
-            String eUri = "";
-            Date eDate = null;
+            String title = feed.getTitle();
+            if (title == null){
+                new Toast(context).makeText(context, "unable to read podcast title", Toast.LENGTH_LONG).show();
+            } else{
+                String description = ifNullMakeEmptyString(feed.getDescription());
+                Log.d(TAG, "syncPodcast: title" + title + ", author: " + author + ", description: " + description);
+                ContentValues cv = new ContentValues();
+                cv.put("title", title);
+                cv.put("description", description);
+                cv.put("author", author);
+                Uri uri = context.getContentResolver().insert(PodcastContract.PodcastEntry.CONTENT_URI, cv);
+                String podcast = uri.getLastPathSegment();
+                Log.d(TAG, "syncPodcast: last path segment " + podcast);
+
+                List<SyndEntry> entries = feed.getEntries();
+                String eTitle = "";
+                String eDescription = "";
+                String eUri = "";
+                String eAuthor = "";
+                Date eDate = null;
 
 
-            for (SyndEntry entry : entries){
-                eTitle = ifNullMakeEmptyString(entry.getTitle());
-                eDescription = ifNullMakeEmptyString(entry.getDescription().getValue());
-                eUri = ifNullMakeEmptyString(entry.getUri());
-                eDate = entry.getPublishedDate();
-                ContentValues eCv = new ContentValues();
-                eCv.put("title", eTitle);
-                eCv.put("description", eDescription);
-                eCv.put("podcast", ePodcast);
-                eCv.put("url", eUri);
-                eCv.put("date", eDate.getTime());
-                context.getContentResolver().insert(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv);
+                for (SyndEntry entry : entries){
+                    eTitle = ifNullMakeEmptyString(entry.getTitle());
+                    eDescription = ifNullMakeEmptyString(entry.getDescription().getValue());
+                    eUri = ifNullMakeEmptyString(entry.getUri());
+                    eDate = entry.getPublishedDate();
+                    eAuthor =ifNullMakeEmptyString(entry.getAuthor());
+                    ContentValues eCv = new ContentValues();
+                    eCv.put("title", eTitle);
+                    eCv.put("description", eDescription);
+                    eCv.put("podcast", title);
+                    eCv.put("url", eUri);
+                    eCv.put("date", eDate.getTime());
+                    eCv.put("author", eAuthor);
+                    // this is a hack
+                    eCv.put("path", "RohingjarVeraIlluga.mp3");
+                    //
+                    context.getContentResolver().insert(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv);
+                }
+                Log.d(TAG, "syncPodcast: eTitle:"+eTitle+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate + ", eAuthor: " + eAuthor+", podcast:"+title);
             }
-            Log.d(TAG, "syncPodcast: eTitle:"+eTitle+", ePodcast:"+ePodcast+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate);
 
         } catch (Exception e) {
             /* Server probably invalid */

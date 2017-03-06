@@ -1,7 +1,6 @@
 package com.olafurtorfi.www.podcastmarket.sync;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -14,6 +13,7 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
+import com.olafurtorfi.www.podcastmarket.utilities.RealDataUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,7 +35,7 @@ public class PodcastSyncUtil {
     private static final String PODCAST_SYNC_TAG = "podcast-sync";
 
     /**
-     * Schedules a repeating sync of Sunshine's podcast data using FirebaseJobDispatcher.
+     * Schedules a repeating sync of PodcastMarket's podcast data using FirebaseJobDispatcher.
      * @param context Context used to create the GooglePlayDriver that powers the
      *                FirebaseJobDispatcher
      */
@@ -44,9 +44,9 @@ public class PodcastSyncUtil {
         Driver driver = new GooglePlayDriver(context);
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);
 
-        /* Create the Job to periodically sync Sunshine */
-        Job syncSunshineJob = dispatcher.newJobBuilder()
-                /* The Service that will be used to sync Sunshine's data */
+        /* Create the Job to periodically sync PodcastMarket */
+        Job syncPodcastJob = dispatcher.newJobBuilder()
+                /* The Service that will be used to sync PodcastMarket's data */
                 .setService(PodcastFirebaseJobService.class)
                 /* Set the UNIQUE tag used to identify this Job */
                 .setTag(PODCAST_SYNC_TAG)
@@ -63,7 +63,7 @@ public class PodcastSyncUtil {
                  */
                 .setLifetime(Lifetime.FOREVER)
                 /*
-                 * We want Sunshine's podcast data to stay up to date, so we tell this Job to recur.
+                 * We want PodcastMarket's podcast data to stay up to date, so we tell this Job to recur.
                  */
                 .setRecurring(true)
                 /*
@@ -85,7 +85,7 @@ public class PodcastSyncUtil {
                 .build();
 
         /* Schedule the Job with the dispatcher */
-        dispatcher.schedule(syncSunshineJob);
+        dispatcher.schedule(syncPodcastJob);
     }
     /**
      * Creates periodic sync tasks and checks to see if an immediate sync is required. If an
@@ -105,7 +105,7 @@ public class PodcastSyncUtil {
         sInitialized = true;
 
         /*
-         * This method call triggers Sunshine to create its task to synchronize podcast data
+         * This method call triggers PodcastMarket to create its task to synchronize podcast data
          * periodically.
          */
         scheduleFirebaseJobDispatcherSync(context);
@@ -173,7 +173,8 @@ public class PodcastSyncUtil {
      * @param context The Context used to start the IntentService for the sync.
      */
     public static void startImmediateSync(@NonNull final Context context) {
-        Intent intentToSyncImmediately = new Intent(context, PodcastSyncIntentService.class);
-        context.startService(intentToSyncImmediately);
+//        Intent intentToSyncImmediately = new Intent(context, PodcastSyncIntentService.class);
+//        context.startService(intentToSyncImmediately);
+        RealDataUtil.insertRealTestData(context);
     }
 }

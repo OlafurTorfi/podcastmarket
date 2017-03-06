@@ -23,25 +23,21 @@ import static junit.framework.Assert.assertTrue;
 
 public class PodcastDataTest {
 
-    private Context context;
-
+    private Context context = InstrumentationRegistry.getTargetContext();
 
     private SQLiteDatabase database;
-    private PodcastDbHelper dbHelper;
+    private PodcastDbHelper dbHelper = new PodcastDbHelper(context);
 
     @Before
     public void before(){
         Log.i("Podcast Data Test", "Setting up database");
-        context = InstrumentationRegistry.getTargetContext();
-        dbHelper = new PodcastDbHelper(context);
-        database = dbHelper.getWritableDatabase();
-        dbHelper.onUpgrade(database,0,1);
+        deleteAllRecordsFromTable();
+        //dbHelper.onUpgrade(database,0,1);
     }
 
     @Test
     public void testQueryFakeData(){
 
-        FakeDataUtil.insertFakeEpisodes(context);
         FakeDataUtil.insertFakePodcasts(context);
         database = dbHelper.getReadableDatabase();
 
@@ -57,26 +53,13 @@ public class PodcastDataTest {
         Log.i("Test Query", "number of rows" + query.getCount());
         assertTrue("query has some rows",query.getCount()>0);
         query.close();
-
-
-        Cursor query2 = database.query(EpisodeContract.EpisodeEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        Log.i("Test Query2", "number of rows" + query2.getCount());
-        assertTrue("query has some rows",query2.getCount()>0);
-        query2.close();
+        database.close();
     }
 
     @Test
     public void testDuplicateDateInsertBehaviorShouldReplace() {
 
-        dbHelper = new PodcastDbHelper(context);
-        Log.i("Podcast Data Test", "Running duplicate insert test");
+
         database = dbHelper.getWritableDatabase();
         /* Obtain podcast values from TestUtilities */
         ContentValues testPodcastValues = new ContentValues();
@@ -131,5 +114,16 @@ public class PodcastDataTest {
 
         /* Always close the cursor after you're done with it */
         queryCursor.close();
+        database.close();
+    }
+    private void deleteAllRecordsFromTable() {
+
+        database = dbHelper.getWritableDatabase();
+        /* The delete method deletes all of the desired rows from the table, not the table itself */
+        database.delete(EpisodeContract.EpisodeEntry.TABLE_NAME, null, null);
+        database.delete(PodcastContract.PodcastEntry.TABLE_NAME, null, null);
+
+        /* Always close the database when you're through with it */
+        database.close();
     }
 }

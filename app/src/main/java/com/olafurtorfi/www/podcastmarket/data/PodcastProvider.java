@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 /**
  * Created by olitorfi on 15/02/2017.
  */
@@ -27,6 +30,8 @@ public class PodcastProvider  extends ContentProvider {
     public static final int CODE_EPISODE_OF_PODCAST = 103;
     public static final int CODE_EPISODE_OF_ID = 104;
     public static final int CODE_PODCAST_OF_ID = 105;
+    public static final int CODE_BREAKPOINT= 106;
+    public static final int CODE_BREAKPOINT_WITH_PODCAST_AND_EPISODE = 107;
 
 
     private static String TAG = "PodcastProvider";
@@ -67,12 +72,13 @@ public class PodcastProvider  extends ContentProvider {
         /*
          * For each type of URI you want to add, create a corresponding code. Preferably, these are
          * constant fields in your class so that you can use them throughout the class and you no
-         * they aren't going to change. In Sunshine, we use CODE_PODCAST or CODE_PODCAST_WITH_TITLE.
+         * they aren't going to change. In PodcastMarket, we use CODE_PODCAST or CODE_PODCAST_WITH_TITLE.
          */
 
         /* This URI is content://com.olafurtorfi.www.podcast/podcast/ */
         matcher.addURI(authority, PodcastContract.PATH_PODCAST, CODE_PODCAST);
         matcher.addURI(authority, EpisodeContract.PATH_EPISODE, CODE_EPISODE);
+        matcher.addURI(authority, BreakpointContract.PATH_BREAKPOINT, CODE_BREAKPOINT);
 
         /*
          * This URI would look something like content://com.olafurtorfi.www.podcast/podcast/Torfakast
@@ -80,10 +86,14 @@ public class PodcastProvider  extends ContentProvider {
          * that it should return the CODE_PODCAST_WITH_DATE code
          */
         matcher.addURI(authority, PodcastContract.PATH_PODCAST + "/" + PodcastContract.PATH_TITLE + "/*", CODE_PODCAST_WITH_TITLE);
-        matcher.addURI(authority, EpisodeContract.PATH_EPISODE + "/" + EpisodeContract.PATH_PODCAST + "/#", CODE_EPISODE_OF_PODCAST);
+        matcher.addURI(authority, EpisodeContract.PATH_EPISODE + "/" + EpisodeContract.PATH_PODCAST + "/*", CODE_EPISODE_OF_PODCAST);
 
         matcher.addURI(authority, PodcastContract.PATH_PODCAST + "/" + PodcastContract.PATH_ID + "/#", CODE_PODCAST_OF_ID);
         matcher.addURI(authority, EpisodeContract.PATH_EPISODE + "/" + EpisodeContract.PATH_ID + "/#", CODE_EPISODE_OF_ID);
+
+        matcher.addURI(authority, BreakpointContract.PATH_BREAKPOINT + "/" +
+                BreakpointContract.PATH_PODCAST + "/*/" +
+                BreakpointContract.PATH_EPISODE + "/*", CODE_BREAKPOINT_WITH_PODCAST_AND_EPISODE);
 
         return matcher;
     }
@@ -116,7 +126,7 @@ public class PodcastProvider  extends ContentProvider {
     }
 
     /**
-     * Handles requests to insert a set of new rows. In Sunshine, we are only going to be
+     * Handles requests to insert a set of new rows. In PodcastMarket, we are only going to be
      * inserting multiple rows of data at a time from a podcast podcast. There is no use case
      * for inserting a single row of data into our ContentProvider, and so we are only going to
      * implement bulkInsert. In a normal ContentProvider's implementation, you will probably want
@@ -143,7 +153,7 @@ public class PodcastProvider  extends ContentProvider {
                             long _id = db.insert(PodcastContract.PodcastEntry.TABLE_NAME, null, value);
                             if (_id != -1) {
 
-                                Log.v(TAG, "bulkInsert: " + value.toString() + " and id: " + _id);
+                                Log.v(TAG, "bulkInsert podcast: " + value.toString() + " and id: " + _id);
                                 rowsInserted++;
                             }
                         }
@@ -163,8 +173,30 @@ public class PodcastProvider  extends ContentProvider {
                 try {
                     for (ContentValues value : values){
                         if(value != null){
-                            Log.v(TAG, "bulkInsert: " + value.toString());
+                            Log.v(TAG, "bulkInsert episode: " + value.toString());
                             long _id = db.insert(EpisodeContract.EpisodeEntry.TABLE_NAME,null,value);
+                            if (_id != -1){
+                                rowsInserted++;
+                            }
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                }
+                finally {
+                    db.endTransaction();
+                }
+
+                if (rowsInserted > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                return rowsInserted;
+            case CODE_BREAKPOINT:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values){
+                        if(value != null){
+                            Log.v(TAG, "bulkInsert breakpoint: " + value.toString());
+                            long _id = db.insert(BreakpointContract.BreakpointEntry.TABLE_NAME,null,value);
                             if (_id != -1){
                                 rowsInserted++;
                             }
@@ -188,7 +220,7 @@ public class PodcastProvider  extends ContentProvider {
     }
 
     /**
-     * Handles query requests from clients. We will use this method in Sunshine to query for all
+     * Handles query requests from clients. We will use this method in PodcastMarket to query for all
      * of our podcast data as well as to query for the podcast on a particular day.
      *
      * @param uri           The URI to query
@@ -212,9 +244,10 @@ public class PodcastProvider  extends ContentProvider {
          * Here's the switch statement that, given a URI, will determine what kind of request is
          * being made and query the database accordingly.
          */
+        Log.v(TAG, "query: " + uri.toString());
         switch (sUriMatcher.match(uri)) {
             case CODE_PODCAST_WITH_TITLE: {
-                String title = uri.getLastPathSegment();
+                String title = decodeSegment(uri.getLastPathSegment());
 
                 /*
                  * The query method accepts a string array of arguments, as there may be more
@@ -290,8 +323,25 @@ public class PodcastProvider  extends ContentProvider {
                 );
                 break;
             }
+            case CODE_BREAKPOINT:{
+                if(sortOrder == null){
+                    sortOrder = BreakpointContract.BreakpointEntry.COLUMN_TIME + " ASC";
+                }
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        BreakpointContract.BreakpointEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
             case CODE_EPISODE_OF_PODCAST: {
-                String podcastTitle = uri.getLastPathSegment();
+                String podcastTitle = decodeSegment(uri.getLastPathSegment());
+                Log.v(TAG, "querying for episodes of podcast with title: "+ podcastTitle);
+
                 String[] selectionArguments = new String[]{podcastTitle};
                 cursor = mOpenHelper.getReadableDatabase().query(
                         EpisodeContract.EpisodeEntry.TABLE_NAME,
@@ -311,6 +361,28 @@ public class PodcastProvider  extends ContentProvider {
                         EpisodeContract.EpisodeEntry.TABLE_NAME,
                         projection,
                         EpisodeContract.EpisodeEntry.COLUMN_ID + " = ?",
+                        selectionArguments,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case CODE_BREAKPOINT_WITH_PODCAST_AND_EPISODE: {
+                if(sortOrder == null){
+                    sortOrder = BreakpointContract.BreakpointEntry.COLUMN_TIME + " ASC";
+                }
+                List<String> pathSegments = uri.getPathSegments();
+                Log.v(TAG, "query: pathSegments length " + pathSegments.size());
+                String podcastTitle = decodeSegment(pathSegments.get(pathSegments.size() - 3));
+                String episodeTitle = decodeSegment(uri.getLastPathSegment());
+
+                String[] selectionArguments = new String[]{podcastTitle,episodeTitle};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        BreakpointContract.BreakpointEntry.TABLE_NAME,
+                        projection,
+                        BreakpointContract.BreakpointEntry.COLUMN_PODCAST + " = ? and " +
+                                BreakpointContract.BreakpointEntry.COLUMN_EPISODE + " = ?" ,
                         selectionArguments,
                         null,
                         null,
@@ -364,6 +436,12 @@ public class PodcastProvider  extends ContentProvider {
                         selection,
                         selectionArgs);
                 break;
+            case CODE_BREAKPOINT:
+                numRowsDeleted = mOpenHelper.getWritableDatabase().delete(
+                        BreakpointContract.BreakpointEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -377,14 +455,14 @@ public class PodcastProvider  extends ContentProvider {
     }
 
     /**
-     * In Sunshine, we aren't going to do anything with this method. However, we are required to
+     * In PodcastMarket, we aren't going to do anything with this method. However, we are required to
      * override it as PodcastProvider extends ContentProvider and getType is an abstract method in
      * ContentProvider. Normally, this method handles requests for the MIME type of the data at the
      * given URI. For example, if your app provided images at a particular URI, then you would
      * return an image URI from this method.
      *
      * @param uri the URI to query.
-     * @return nothing in Sunshine, but normally a MIME type string, or null if there is no type.
+     * @return nothing in PodcastMarket, but normally a MIME type string, or null if there is no type.
      */
     @Override
     public String getType(@NonNull Uri uri) {
@@ -392,7 +470,7 @@ public class PodcastProvider  extends ContentProvider {
     }
 
     /**
-     * In Sunshine, we aren't going to do anything with this method. However, we are required to
+     * In PodcastMarket, we aren't going to do anything with this method. However, we are required to
      * override it as PodcastProvider extends ContentProvider and insert is an abstract method in
      * ContentProvider. Rather than the single insert method, we are only going to implement
      * {@link PodcastProvider#bulkInsert}.
@@ -400,7 +478,7 @@ public class PodcastProvider  extends ContentProvider {
      * @param uri    The URI of the insertion request. This must not be null.
      * @param values A set of column_name/value pairs to add to the database.
      *               This must not be null
-     * @return nothing in Sunshine, but normally the URI for the newly inserted item.
+     * @return nothing in PodcastMarket, but normally the URI for the newly inserted item.
      */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
@@ -438,6 +516,21 @@ public class PodcastProvider  extends ContentProvider {
                     db.endTransaction();
                 }
                 return uriOut;
+            case CODE_BREAKPOINT:
+                Log.v(TAG, "insert breakpoint: " + uri.toString());
+                db.beginTransaction();
+                try {
+                    resultId = db.insert(BreakpointContract.BreakpointEntry.TABLE_NAME, null, values);
+                    if (resultId != -1) {
+                        Log.v(TAG, "inserted with id: " + resultId);
+                        uriOut = BreakpointContract.BreakpointEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(resultId)).build();
+                        getContext().getContentResolver().notifyChange(uri, null);
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                return uriOut;
             default:
                 Log.e(TAG, "insert: should not have reached its default method");
                 throw new RuntimeException("Method for following uri not implemented " + uri.toString());
@@ -459,5 +552,15 @@ public class PodcastProvider  extends ContentProvider {
     public void shutdown() {
         mOpenHelper.close();
         super.shutdown();
+    }
+
+    private String decodeSegment(String pathSegment){
+        String result = pathSegment;
+        try {
+            result = java.net.URLDecoder.decode(pathSegment, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

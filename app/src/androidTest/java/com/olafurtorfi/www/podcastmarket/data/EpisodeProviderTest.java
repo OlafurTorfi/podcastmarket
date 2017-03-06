@@ -137,7 +137,7 @@ public class EpisodeProviderTest {
 
     @Test
     public void testBulkInsert() {
-        int BULK_INSERT_RECORDS_TO_INSERT = 18;
+        int BULK_INSERT_RECORDS_TO_INSERT = 15;
         /* Create a new array of ContentValues for episode */
         ContentValues[] bulkInsertTestContentValues = FakeDataUtil.makeFakeEpisodes();
 

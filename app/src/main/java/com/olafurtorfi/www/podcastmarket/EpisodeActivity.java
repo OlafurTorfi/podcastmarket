@@ -1,17 +1,24 @@
 package com.olafurtorfi.www.podcastmarket;
 
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -27,6 +34,7 @@ public class EpisodeActivity  extends AppCompatActivity implements
     public static final String[] MAIN_EPISODE_PROJECTION = {
             EpisodeContract.EpisodeEntry.COLUMN_ID,
             EpisodeContract.EpisodeEntry.COLUMN_TITLE,
+            EpisodeContract.EpisodeEntry.COLUMN_AUTHOR,
             EpisodeContract.EpisodeEntry.COLUMN_PODCAST,
             EpisodeContract.EpisodeEntry.COLUMN_DESCRIPTION,
             EpisodeContract.EpisodeEntry.COLUMN_FILE_PATH,
@@ -40,10 +48,11 @@ public class EpisodeActivity  extends AppCompatActivity implements
      */
     public static final int INDEX_EPISODE_ID = 0;
     public static final int INDEX_EPISODE_TITLE = 1;
-    public static final int INDEX_EPISODE_PODCAST = 2;
-    public static final int INDEX_EPISODE_DESCRIPTION = 3;
-    public static final int INDEX_EPISODE_FILE_PATH = 4;
-    public static final int INDEX_EPISODE_FILE_URL = 5;
+    public static final int INDEX_EPISODE_AUTHOR = 2;
+    public static final int INDEX_EPISODE_PODCAST = 3;
+    public static final int INDEX_EPISODE_DESCRIPTION = 4;
+    public static final int INDEX_EPISODE_FILE_PATH = 5;
+    public static final int INDEX_EPISODE_FILE_URL = 6;
 
 
 
@@ -103,7 +112,35 @@ public class EpisodeActivity  extends AppCompatActivity implements
          * the last created loader is re-used.
          */
         getSupportLoaderManager().initLoader(ID_EPISODE_LOADER, null, this);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        else if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
+        MenuInflater inflater = getMenuInflater();
+        /* Use the inflater's inflate method to inflate our menu layout to this menu */
+        inflater.inflate(R.menu.list, menu);
+        /* Return true so that the menu is displayed in the Toolbar */
+        return true;
     }
 
     @Override
@@ -171,7 +208,24 @@ public class EpisodeActivity  extends AppCompatActivity implements
                 request.setAllowedOverMetered(false);
                 request.setTitle("Download Podcast");
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                dl.enqueue(request);
+                request.setDestinationInExternalFilesDir(this,null,"testfile");
+                long result = dl.enqueue(request);
+                Log.d(TAG, "onClick: " + result);
+//                Uri uriForDownloadedFile = dl.getUriForDownloadedFile(result);
+//                Log.d(TAG, "onClick: " + uriForDownloadedFile.toString());
+
+                ConnectivityManager cm =
+                        (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null &&
+                        activeNetwork.isConnectedOrConnecting();
+
+                Log.d(TAG, "onClick: wifi?" + cm.TYPE_WIFI);
+                Log.d(TAG, "onClick: is connected ?" + isConnected);
+
+                Cursor dlCursor = dl.query(new DownloadManager.Query());
+                Log.d(TAG, "onClick: " + dlCursor.getCount());
                 new Toast(this).makeText(this, "download of " + episode.title + " started", Toast.LENGTH_SHORT).show();
             } else {
                 new Toast(this).makeText(this, "download manager unavailable for android versions older than Gingerbread", Toast.LENGTH_LONG).show();
@@ -185,6 +239,7 @@ public class EpisodeActivity  extends AppCompatActivity implements
             playerIntent.putExtra("title",episode.title);
             playerIntent.putExtra("description",episode.description);
             playerIntent.putExtra("podcast",episode.podcast);
+            playerIntent.putExtra("author",episode.author);
             playerIntent.putExtra("filePath",episode.filePath);
             playerIntent.putExtra("fileUrl",episode.fileUrl);
             startActivity(playerIntent);

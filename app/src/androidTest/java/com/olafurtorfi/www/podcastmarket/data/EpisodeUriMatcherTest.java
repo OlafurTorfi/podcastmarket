@@ -26,7 +26,7 @@ public class EpisodeUriMatcherTest {
 
     private static final Uri TEST_EPISODE_DIR = EpisodeContract.EpisodeEntry.CONTENT_URI;
     private static final Uri TEST_EPISODE_OF_PODCAST_DIR = EpisodeContract.EpisodeEntry
-            .buildEpisodeUriWithPodcast(321);
+            .buildEpisodeUriWithPodcast("testcast");
     private static final Uri TEST_EPISODE_OF_ID_DIR = EpisodeContract.EpisodeEntry.buildEpisodeUriWithId(123);
 
     private static final String episodeCodeVariableName = "CODE_EPISODE";

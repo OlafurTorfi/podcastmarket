@@ -11,12 +11,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
-import com.olafurtorfi.www.podcastmarket.utilities.RealDataUtil;
+import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncUtil;
+
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -55,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements
      */
     private static final int ID_PODCAST_LOADER = 44;
 
+    private static final int RC_SIGN_IN = 123;
+
     private PodcastAdapter mPodcastAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -68,10 +77,25 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
         getSupportActionBar().setElevation(0f);
 
-//        FakeDataUtil.insertFakePodcasts(this);
-//        FakeDataUtil.insertFakeEpisodes(this);
-        RealDataUtil.insertRealTestData(this);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            initializeView();
+        } else {
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
+                                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build(),
+                                    new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build()))
+                            .build(),
+                    RC_SIGN_IN);
+        }
 
+
+    }
+
+    private void initializeView() {
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.
@@ -138,9 +162,9 @@ public class MainActivity extends AppCompatActivity implements
          */
         getSupportLoaderManager().initLoader(ID_PODCAST_LOADER, null, this);
 
-//        PodcastSyncUtil.initialize(this);
-
+        PodcastSyncUtil.initialize(this);
     }
+
     /**
      * Called by the {@link android.support.v4.app.LoaderManagerImpl} when a new Loader needs to be
      * created. This Activity only uses one loader, so we don't necessarily NEED to check the
@@ -189,6 +213,12 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i("MainActivity", "log finished, cursor count: " + data.getCount());
 
+//        for(int i = 0; i < data.getCount(); i++){
+//            data.moveToPosition(i);
+//            String temppodcast = data.getString(data.getColumnIndex(EpisodeContract.EpisodeEntry.COLUMN_PODCAST));
+//            Log.d(TAG, "tempcursor podcast: " + temppodcast);
+//        }
+
         mPodcastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
@@ -211,10 +241,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onClick(long podcastId) {
+    public void onClick(String podcast) {
         Log.d("Main Activity", "On click.....");
         Intent episodeIntent = new Intent(MainActivity.this, EpisodeActivity.class);
-        Uri uriForPodcastClicked = EpisodeContract.EpisodeEntry.buildEpisodeUriWithPodcast(podcastId);
+        Uri uriForPodcastClicked = EpisodeContract.EpisodeEntry.buildEpisodeUriWithPodcast(podcast);
         episodeIntent.setData(uriForPodcastClicked);
         Log.d("Main Activity", uriForPodcastClicked.toString());
         startActivity(episodeIntent);
@@ -259,15 +289,15 @@ public class MainActivity extends AppCompatActivity implements
      * @see #onPrepareOptionsMenu
      * @see #onOptionsItemSelected
      */
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
-//        MenuInflater inflater = getMenuInflater();
-//        /* Use the inflater's inflate method to inflate our menu layout to this menu */
-//        inflater.inflate(R.menu.podcast, menu);
-//        /* Return true so that the menu is displayed in the Toolbar */
-//        return true;
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
+        MenuInflater inflater = getMenuInflater();
+        /* Use the inflater's inflate method to inflate our menu layout to this menu */
+        inflater.inflate(R.menu.list, menu);
+        /* Return true so that the menu is displayed in the Toolbar */
+        return true;
+    }
 
     /**
      * Callback invoked when a menu item was selected from this Activity's menu.
@@ -276,20 +306,16 @@ public class MainActivity extends AppCompatActivity implements
      *
      * @return true if you handle the menu click here, false otherwise
      */
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        int id = item.getItemId();
-//
-//        if (id == R.id.action_settings) {
-//            startActivity(new Intent(this, SettingsActivity.class));
-//            return true;
-//        }
-//        if (id == R.id.action_map) {
-//            openPreferredLocationInMap();
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

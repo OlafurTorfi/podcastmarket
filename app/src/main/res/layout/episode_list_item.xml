@@ -44,7 +44,6 @@
         android:layout_height="wrap_content"
         android:tag="@string/download_episode_button_tag"
         app:srcCompat="@mipmap/ic_download"
-
         android:id="@+id/downloadEpisode"
         app:layout_constraintRight_toLeftOf="parent"
         tools:layout_editor_absoluteY="0dp" />
@@ -56,7 +55,7 @@
         app:srcCompat="@mipmap/ic_delete"
         android:id="@+id/deleteEpisode"
         tools:layout_editor_absoluteY="0dp"
-        app:layout_constraintRight_toLeftOf="@+id/episode_title"
+        app:layout_constraintRight_toLeftOf="@+id/playNow"
         android:layout_marginEnd="8dp" />
 
     <ImageButton
@@ -64,8 +63,8 @@
         app:srcCompat="@mipmap/ic_play"
         android:id="@+id/playNow"
         android:tag="@string/play_button_tag"
-        app:layout_constraintTop_toTopOf="@+id/deleteEpisode"
         android:layout_height="wrap_content"
-        app:layout_constraintRight_toLeftOf="@+id/deleteEpisode"
+        tools:layout_editor_absoluteY="0dp"
+        app:layout_constraintRight_toLeftOf="@+id/episode_title"
         android:layout_marginEnd="8dp" />
 </android.support.constraint.ConstraintLayout>

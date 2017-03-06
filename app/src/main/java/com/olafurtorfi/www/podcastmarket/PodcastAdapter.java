@@ -35,7 +35,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
      * The interface that receives onClick messages.
      */
     public interface PodcastAdapterOnClickHandler {
-        void onClick(long podcastId);
+        void onClick(String podcast);
     }
 
     /*
@@ -124,8 +124,8 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
             Log.v("Podcast Adapter", v.toString() + " clicked......");
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            long podcastId = mCursor.getLong(MainActivity.INDEX_PODCAST_ID);
-            mClickHandler.onClick(podcastId);
+            String podcast = mCursor.getString(MainActivity.INDEX_PODCAST_TITLE);
+            mClickHandler.onClick(podcast);
         }
     }
 }

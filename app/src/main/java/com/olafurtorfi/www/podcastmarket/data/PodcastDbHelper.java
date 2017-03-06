@@ -21,14 +21,14 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      *
-     * The reason DATABASE_VERSION starts at 3 is because Sunshine has been used in conjunction
-     * with the Android course for a while now. Believe it or not, older versions of Sunshine
+     * The reason DATABASE_VERSION starts at 3 is because PodcastMarket has been used in conjunction
+     * with the Android course for a while now. Believe it or not, older versions of PodcastMarket
      * still exist out in the wild. If we started this DATABASE_VERSION off at 1, upgrading older
-     * versions of Sunshine could cause everything to break. Although that is certainly a rare
+     * versions of PodcastMarket could cause everything to break. Although that is certainly a rare
      * use-case, we wanted to watch out for it and warn you what could happen if you mistakenly
      * version your databases.
      */
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
     public PodcastDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,7 +42,9 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+//        sqLiteDatabase.execSQL("drop table " + PodcastContract.PodcastEntry.TABLE_NAME);
+//        sqLiteDatabase.execSQL("drop table " + EpisodeContract.EpisodeEntry.TABLE_NAME);
+//        sqLiteDatabase.execSQL("drop table " + BreakpointContract.BreakpointEntry.TABLE_NAME);
         /*
          * This String will contain a simple SQL statement that will create a table that will
          * cache our podcast data.
@@ -75,22 +77,38 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
          * that SQL with the execSQL method of our SQLite database object.
          */
 
+
+        Log.d("PodcastDbHelper","about to execute create table sql for podcast");
+        sqLiteDatabase.execSQL(SQL_CREATE_PODCAST_TABLE);
+
         final String SQL_CREATE_EPISODE_TABLE =
                 "CREATE TABLE " + EpisodeContract.EpisodeEntry.TABLE_NAME + " (" +
                         EpisodeContract.EpisodeEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         EpisodeContract.EpisodeEntry.COLUMN_TITLE   + " TEXT NOT NULL, "                    +
                         EpisodeContract.EpisodeEntry.COLUMN_DESCRIPTION   + " TEXT NOT NULL, "                    +
-                        EpisodeContract.EpisodeEntry.COLUMN_PODCAST   + " INTEGER NOT NULL, "                   +
+                        EpisodeContract.EpisodeEntry.COLUMN_PODCAST   + " TEXT NOT NULL, "                   +
+                        EpisodeContract.EpisodeEntry.COLUMN_AUTHOR   + " TEXT, "                   +
                         EpisodeContract.EpisodeEntry.COLUMN_DATE   + " INTEGER, "                   +
                         EpisodeContract.EpisodeEntry.COLUMN_FILE_PATH + " TEXT, "                   +
                         EpisodeContract.EpisodeEntry.COLUMN_FILE_URL + " TEXT NOT NULL, "                   +
                         " UNIQUE (" + EpisodeContract.EpisodeEntry.COLUMN_TITLE + ", "+EpisodeContract.EpisodeEntry.COLUMN_PODCAST+") ON CONFLICT REPLACE);";
         Log.d("PodcastDbHelper", "Episode string " + SQL_CREATE_EPISODE_TABLE);
-
-        Log.d("PodcastDbHelper","about to execute create table sql for podcast");
-        sqLiteDatabase.execSQL(SQL_CREATE_PODCAST_TABLE);
         Log.d("PodcastDbHelper","about to execute create table sql for episodes");
         sqLiteDatabase.execSQL(SQL_CREATE_EPISODE_TABLE);
+
+        final String SQL_CREATE_BREAKPOINT_TABLE =
+                "CREATE TABLE " + BreakpointContract.BreakpointEntry.TABLE_NAME + " (" +
+                        BreakpointContract.BreakpointEntry._ID               + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        BreakpointContract.BreakpointEntry.COLUMN_PODCAST   + " TEXT NOT NULL, "                    +
+                        BreakpointContract.BreakpointEntry.COLUMN_EPISODE   + " TEXT NOT NULL, "                    +
+                        BreakpointContract.BreakpointEntry.COLUMN_START   + " INTEGER NOT NULL, "                   +
+                        BreakpointContract.BreakpointEntry.COLUMN_TIME   + " INTEGER, "                   +
+                        BreakpointContract.BreakpointEntry.COLUMN_TYPE + " TEXT, "                   +
+                        " UNIQUE (" + BreakpointContract.BreakpointEntry.COLUMN_PODCAST + ", "+BreakpointContract.BreakpointEntry.COLUMN_EPISODE+", "+ BreakpointContract.BreakpointEntry.COLUMN_TIME + " ) ON CONFLICT REPLACE);";
+        Log.d("PodcastDbHelper", "Episode string " + SQL_CREATE_EPISODE_TABLE);
+
+        Log.d("PodcastDbHelper","about to execute create table sql for breakpoint");
+        sqLiteDatabase.execSQL(SQL_CREATE_BREAKPOINT_TABLE);
     }
 
     /**
@@ -105,10 +123,12 @@ public class PodcastDbHelper extends SQLiteOpenHelper {
      * @param oldVersion     The old database version
      * @param newVersion     The new database version
      */
+
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PodcastContract.PodcastEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + EpisodeContract.EpisodeEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + BreakpointContract.BreakpointEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

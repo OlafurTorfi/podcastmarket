@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "709611598813",
+    "firebase_url": "https://podcastmarket-fce04.firebaseio.com",
+    "project_id": "podcastmarket-fce04",
+    "storage_bucket": "podcastmarket-fce04.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709611598813:android:7213be8bcb9cc803",
+        "android_client_info": {
+          "package_name": "com.olafurtorfi.www.podcastmarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "709611598813-48t4i04lm7t3rc4j38hul36ddts8a4ii.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.olafurtorfi.www.podcastmarket",
+            "certificate_hash": "cd6b49b839fcf894941b26bd17bf509009dac23f"
+          }
+        },
+        {
+          "client_id": "709611598813-7j4gdisq5khqah3um9ejmm0efhhbb97e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7fY2ewxbadeYqknZ7QBy42xMapvMALfA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "709611598813-7j4gdisq5khqah3um9ejmm0efhhbb97e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

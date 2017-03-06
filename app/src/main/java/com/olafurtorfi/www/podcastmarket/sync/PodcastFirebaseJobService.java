@@ -31,7 +31,7 @@ public class PodcastFirebaseJobService  extends JobService {
             @Override
             protected Void doInBackground(Void... voids) {
                 Context context = getApplicationContext();
-//                SunshineSyncTask.syncPodcast(context);
+//                PodcastMarketSyncTask.syncPodcast(context);
                 jobFinished(jobParameters, false);
                 return null;
             }
