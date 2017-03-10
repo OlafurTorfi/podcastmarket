@@ -4,7 +4,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.olafurtorfi.www.podcastmarket.activities.PlayerActivity;
+import com.olafurtorfi.www.podcastmarket.ui.PlayerActivity;
 
 import org.junit.Rule;
 import org.junit.Test;

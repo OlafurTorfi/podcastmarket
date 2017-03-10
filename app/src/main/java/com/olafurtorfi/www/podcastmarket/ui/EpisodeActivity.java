@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket;
+package com.olafurtorfi.www.podcastmarket.ui;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -12,18 +12,16 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.olafurtorfi.www.podcastmarket.activities.ListActivity;
-import com.olafurtorfi.www.podcastmarket.activities.PlayerActivity;
+import com.olafurtorfi.www.podcastmarket.R;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeObject;
 import com.olafurtorfi.www.podcastmarket.utilities.NetworkUtil;
 
 public class EpisodeActivity  extends ListActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        EpisodeAdapter.EpisodeAdapterOnClickHandler{
+        EpisodeAdapter.EpisodeAdapterOnClickHandler {
 
     public static final String[] MAIN_EPISODE_PROJECTION = {
             EpisodeContract.EpisodeEntry.COLUMN_ID,
@@ -122,14 +120,7 @@ public class EpisodeActivity  extends ListActivity implements
         mEpisodeAdapter.swapCursor(data);
         if (mPosition == android.support.v7.widget.RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showEpisodeDataView();
-    }
-
-    private void showEpisodeDataView() {
-        /* First, hide the loading indicator */
-        mLoadingIndicator.setVisibility(View.INVISIBLE);
-        /* Finally, make sure the podcast data is visible */
-        mRecyclerView.setVisibility(View.VISIBLE);
+        if (data.getCount() != 0) showDataView();
     }
 
     @Override

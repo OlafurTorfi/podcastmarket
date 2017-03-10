@@ -1,5 +1,7 @@
-package com.olafurtorfi.www.podcastmarket.activities;
+package com.olafurtorfi.www.podcastmarket.ui;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -12,8 +14,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.olafurtorfi.www.podcastmarket.MainActivity;
 import com.olafurtorfi.www.podcastmarket.R;
 
 public class ListActivity extends AppCompatActivity {
@@ -22,6 +24,7 @@ public class ListActivity extends AppCompatActivity {
     
     public RecyclerView mRecyclerView;
     public ProgressBar mLoadingIndicator;
+    public TextView mErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,9 @@ public class ListActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_list);
 
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_list_loading_indicator);
+
+        mErrorMessage = (TextView) findViewById(R.id.error_message);
+
 
 
         LinearLayoutManager layoutManager =
@@ -79,22 +85,59 @@ public class ListActivity extends AppCompatActivity {
             return true;
         }
         else if (id == R.id.action_add_podcast) {
+
             Log.d(TAG, "onOptionsItemSelected: add podcast");
+            // DialogFragment.show() will take care of adding the fragment
+            // in a transaction.  We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+            AddPodcastFragment newDialog = AddPodcastFragment.newInstance();
+            newDialog.show(ft,"Add Podcast");
             return true;
-        }
-        else if (id == R.id.action_search_podcasts) {
+        } else if (id == R.id.action_search_podcasts) {
             Log.d(TAG, "onOptionsItemSelected: search podcasts");
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+            SearchPodcastFragment newDialog = SearchPodcastFragment.newInstance();
+            newDialog.show(ft,"Search Podcast");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
+    public void showDataView() {
+        /* First, hide the loading indicator */
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        /* Finally, make sure the podcast data is visible */
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
+    }
 
     private void showLoading() {
         /* Then, hide the podcast data */
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Finally, show the loading indicator */
         mLoadingIndicator.setVisibility(View.VISIBLE);
+        mErrorMessage.setVisibility(View.GONE);
+    }
+
+
+    public void showError(String message){
+        mErrorMessage = (TextView) findViewById(R.id.error_message);
+        mErrorMessage.setText(message);
+        mErrorMessage.setVisibility(View.VISIBLE);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_podcast);
+        mRecyclerView.setVisibility(View.GONE);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        mLoadingIndicator.setVisibility(View.GONE);
     }
 }

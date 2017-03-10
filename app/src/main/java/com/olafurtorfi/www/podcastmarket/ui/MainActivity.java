@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket;
+package com.olafurtorfi.www.podcastmarket.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -23,7 +23,7 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
 import com.google.firebase.auth.FirebaseAuth;
-import com.olafurtorfi.www.podcastmarket.activities.SettingsActivity;
+import com.olafurtorfi.www.podcastmarket.R;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
 import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncUtil;
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setElevation(0f);
-
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
             initializeView();
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializeView() {
         mErrorMessage = (TextView) findViewById(R.id.error_message);
-        mErrorMessage.setVisibility(View.GONE);
+
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
          * do things like set the adapter of the RecyclerView and toggle the visibility.

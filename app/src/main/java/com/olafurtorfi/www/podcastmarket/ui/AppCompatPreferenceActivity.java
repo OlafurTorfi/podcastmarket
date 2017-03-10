@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket;
+package com.olafurtorfi.www.podcastmarket.ui;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

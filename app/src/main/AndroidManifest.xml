@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,12 +41,12 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".EpisodeActivity" />
-        <activity android:name=".activities.PlayerActivity" />
+        <activity android:name=".ui.EpisodeActivity" />
+        <activity android:name=".ui.PlayerActivity" />
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activities.ListActivity"></activity>
+        <activity android:name=".ui.ListActivity"></activity>
     </application>
 
 </manifest>

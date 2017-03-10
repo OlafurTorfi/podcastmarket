@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket;
+package com.olafurtorfi.www.podcastmarket.ui;
 
 
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.olafurtorfi.www.podcastmarket.R;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeObject;
 
 /**

@@ -1,4 +1,4 @@
-package com.olafurtorfi.www.podcastmarket.activities;
+package com.olafurtorfi.www.podcastmarket.ui;
 
 
 import android.annotation.TargetApi;
@@ -17,8 +17,6 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.olafurtorfi.www.podcastmarket.AppCompatPreferenceActivity;
-import com.olafurtorfi.www.podcastmarket.MainActivity;
 import com.olafurtorfi.www.podcastmarket.R;
 
 import java.util.List;
