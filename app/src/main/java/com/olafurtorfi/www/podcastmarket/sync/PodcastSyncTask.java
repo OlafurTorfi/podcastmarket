@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
 import com.olafurtorfi.www.podcastmarket.utilities.NetworkUtil;
@@ -30,6 +32,14 @@ public class PodcastSyncTask {
     }
     private static String TAG = "PodcastSynTask";
     synchronized public static void syncPodcast(Context context, String urlString) {
+
+        Log.d(TAG, "syncPodcast: try syncing podcast");
+//
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("teststuff");
+//        DatabaseReference testmo = myRef.child("testmo");
+//        myRef.setValue(urlString);
+//        testmo.setValue("stuff");
 
         try {
             /*
@@ -69,8 +79,8 @@ public class PodcastSyncTask {
                 cv.put("description", description);
                 cv.put("author", author);
                 Uri uri = context.getContentResolver().insert(PodcastContract.PodcastEntry.CONTENT_URI, cv);
-                String podcast = uri.getLastPathSegment();
-                Log.d(TAG, "syncPodcast: last path segment " + podcast);
+//                String podcast = uri.getLastPathSegment();
+//                Log.d(TAG, "syncPodcast: last path segment " + podcast);
 
                 List<SyndEntry> entries = feed.getEntries();
                 String eTitle = "";
@@ -94,16 +104,37 @@ public class PodcastSyncTask {
                     eCv.put("date", eDate.getTime());
                     eCv.put("author", eAuthor);
                     // this is a hack
-                    eCv.put("path", "RohingjarVeraIlluga.mp3");
-                    //
+//                    eCv.put("path", "RohingjarVeraIlluga.mp3");
+
                     context.getContentResolver().insert(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv);
+                    Log.v(TAG, "syncPodcast: eTitle:"+eTitle+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate + ", eAuthor: " + eAuthor+", podcast:"+title);
+
                 }
-                Log.d(TAG, "syncPodcast: eTitle:"+eTitle+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate + ", eAuthor: " + eAuthor+", podcast:"+title);
-            }
+
+                Log.d(TAG, "syncPodcast: eTitle:"+title+", eDescription:"+description+", eUri:"+urlString + ", eDate: "+eDate + ", eAuthor: " + author);
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference podcasts = database.getReference("podcasts");
+                String podcastKey = author+"-"+title;
+                podcastKey = podcastKey.replace(".","(dot)").replace("#","(hash)").replace("$","(dollar)").replace("[","(sqrBracketOpen)").replace("]","(sqrBracketClose)");
+                DatabaseReference podcast = podcasts.child(podcastKey);
+                DatabaseReference pa = podcast.child("author");
+                pa.setValue(author);
+                DatabaseReference pt = podcast.child("title");
+                pt.setValue(title);
+                DatabaseReference pu = podcast.child("url");
+                pu.setValue(urlString);
+                DatabaseReference pd = podcast.child("description");
+                pd.setValue(description);
+
+                }
 
         } catch (Exception e) {
             /* Server probably invalid */
+            // TODO: show error message to user, this method fails due to intent activity being dead
+//            new Toast(context).makeText(context, e.toString(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
+
 }

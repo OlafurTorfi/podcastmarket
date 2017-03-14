@@ -77,7 +77,7 @@ public class ListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, PodcastsActivity.class));
             return true;
         }
         else if (id == R.id.action_settings) {
@@ -132,12 +132,12 @@ public class ListActivity extends AppCompatActivity {
 
 
     public void showError(String message){
-        mErrorMessage = (TextView) findViewById(R.id.error_message);
+//        mErrorMessage = (TextView) findViewById(R.id.error_message);
         mErrorMessage.setText(message);
         mErrorMessage.setVisibility(View.VISIBLE);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_podcast);
+//        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_list);
         mRecyclerView.setVisibility(View.GONE);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+//        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator);
         mLoadingIndicator.setVisibility(View.GONE);
     }
 }

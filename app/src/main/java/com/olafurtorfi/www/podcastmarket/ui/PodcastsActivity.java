@@ -70,8 +70,8 @@ public class PodcastsActivity extends ListActivity implements
         /* Setting the adapter attaches it to the RecyclerView in our layout. */
         mRecyclerView.setAdapter(mPodcastAdapter);
 
-        mUri = getIntent().getData();
-        if (mUri == null) throw new NullPointerException("URI for PodcastActivity cannot be null");
+//        mUri = getIntent().getData();
+//        if (mUri == null) throw new NullPointerException("URI for PodcastActivity cannot be null");
         /*
          * Ensures a loader is initialized and active. If the loader doesn't already exist, one is
          * created and (if the activity/fragment is currently started) starts the loader. Otherwise
@@ -125,7 +125,7 @@ public class PodcastsActivity extends ListActivity implements
         mPodcastAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0) showPodcastDataView();
+        if (data.getCount() != 0) showDataView();
     }
 
     /**

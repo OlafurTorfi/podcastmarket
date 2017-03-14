@@ -3,7 +3,9 @@ package com.olafurtorfi.www.podcastmarket.ui;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -16,6 +18,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.olafurtorfi.www.podcastmarket.R;
+import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncIntentService;
+
 public class AddPodcastFragment extends DialogFragment {
 
     EditText addPodcastInput;
@@ -86,5 +90,10 @@ public class AddPodcastFragment extends DialogFragment {
     public void addPodcast(){
         Editable text = addPodcastInput.getText();
         Log.d(TAG, "addPodcast: " + text.toString());
+
+        Context context = getContext();
+        Intent intent = new Intent(context, PodcastSyncIntentService.class);
+        intent.putExtra("urlString", text.toString());
+        context.startService(intent);
     }
 }

@@ -4,6 +4,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncTask;
 import com.olafurtorfi.www.podcastmarket.ui.PlayerActivity;
 
 import org.junit.Rule;
@@ -24,9 +25,8 @@ public class PlayerActivityTest {
             PlayerActivity.class);
 
     @Test
-    public void getMediaFile(){
-//        Context context = InstrumentationRegistry.getTargetContext();
-//        PlayerActivity playerActivity = new PlayerActivity();
-//        playerActivity.getMediaFile("testpath.mp3");
+    public void addToFirebase(){
+        PodcastSyncTask podcastSyncTask = new PodcastSyncTask();
+        podcastSyncTask.addToFirebase("this is a test");
     }
 }

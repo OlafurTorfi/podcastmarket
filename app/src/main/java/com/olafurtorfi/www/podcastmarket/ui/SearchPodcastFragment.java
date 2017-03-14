@@ -4,14 +4,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -19,17 +18,10 @@ import android.widget.TextView;
 
 import com.olafurtorfi.www.podcastmarket.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SearchPodcastFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SearchPodcastFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SearchPodcastFragment extends DialogFragment {
 
     EditText searchPodcastInput;
+    int itemSelected = 0;
     private static final String TAG = "SearchPodcastFragment";
 
     public SearchPodcastFragment() {
@@ -73,7 +65,7 @@ public class SearchPodcastFragment extends DialogFragment {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    addPodcast();
+                    searchPodcast();
                 }
                 return true;
             }
@@ -81,20 +73,55 @@ public class SearchPodcastFragment extends DialogFragment {
 
         /* Inflate and set the layout for the dialog */
         /* Pass null as the parent view because its going in the dialog layout*/
+        String[] choices = {"title","author"};
         builder.setView(rootView)
                 /* Add action buttons */
                 .setPositiveButton(R.string.search_podcast_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        addPodcast();
+                        searchPodcast();
                     }
-                });
+                })
+                .setSingleChoiceItems(choices, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        itemSelected(which);
+                    }
+                })
+                .setTitle(R.string.search_podcast_title);
 
         return builder.create();
     }
 
-    public void addPodcast(){
+    public void itemSelected(int which){
+        itemSelected = which;
+    }
+
+    public void searchPodcast(){
         Editable text = searchPodcastInput.getText();
-        Log.d(TAG, "addPodcast: " + text.toString());
+        String searchType = "title";
+        switch(itemSelected){
+            case 0:
+                Log.d(TAG, "searchPodcast titles by: " + text.toString());
+                searchType = "title";
+                break;
+            case 1:
+                Log.d(TAG, "searchPodcast authors by: " + text.toString());
+                searchType = "author";
+                break;
+            default:
+                Log.e(TAG, "searchPodcast choice error, defaulting to titles by: " + text.toString());
+                break;
+        }
+        Log.d(TAG, "searchPodcast by " + searchType + " with :" + text.toString());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            Intent intent = new Intent(getContext(), SearchResultActivity.class);
+            intent.putExtra("searchText", text.toString());
+            intent.putExtra("searchType", searchType);
+            startActivity(intent);
+        }
+        else{
+            Log.e(TAG, "searchPodcast: not compatable with android version");
+        }
     }
 }

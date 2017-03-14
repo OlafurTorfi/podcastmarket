@@ -65,8 +65,8 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
     @Override
     public void onBindViewHolder(PodcastAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        String title = mCursor.getString(MainActivity.INDEX_PODCAST_TITLE);
-        String author = mCursor.getString(MainActivity.INDEX_PODCAST_AUTHOR);
+        String title = mCursor.getString(PodcastsActivity.INDEX_PODCAST_TITLE);
+        String author = mCursor.getString(PodcastsActivity.INDEX_PODCAST_AUTHOR);
 
         Log.v("Podcast Adapter", "position "+ position + ", Cursor value " + title);
         holder.podcastTitleView.setText(title);
@@ -81,7 +81,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
 
     /**
      * Swaps the cursor used by the ForecastAdapter for its podcast data. This method is called by
-     * MainActivity after a load has finished, as well as when the Loader responsible for loading
+     * PodcastsActivity after a load has finished, as well as when the Loader responsible for loading
      * the podcast data is reset. When this method is called, we assume we have a completely new
      * set of data, so we call notifyDataSetChanged to tell the RecyclerView to update.
      *
@@ -89,7 +89,6 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
      */
     void swapCursor(Cursor newCursor) {
         mCursor = newCursor;
-//      COMPLETED (12) After the new Cursor is set, call notifyDataSetChanged
         notifyDataSetChanged();
     }
 
@@ -126,7 +125,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
             Log.v("Podcast Adapter", v.toString() + " clicked......");
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            String podcast = mCursor.getString(MainActivity.INDEX_PODCAST_TITLE);
+            String podcast = mCursor.getString(PodcastsActivity.INDEX_PODCAST_TITLE);
             mClickHandler.onClick(podcast);
         }
     }
