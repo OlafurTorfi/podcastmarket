@@ -102,11 +102,9 @@ public class SearchPodcastFragment extends DialogFragment {
         String searchType = "title";
         switch(itemSelected){
             case 0:
-                Log.d(TAG, "searchPodcast titles by: " + text.toString());
                 searchType = "title";
                 break;
             case 1:
-                Log.d(TAG, "searchPodcast authors by: " + text.toString());
                 searchType = "author";
                 break;
             default:
