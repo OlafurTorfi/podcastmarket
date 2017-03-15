@@ -4,11 +4,9 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.olafurtorfi.www.podcastmarket.sync.PodcastSyncTask;
 import com.olafurtorfi.www.podcastmarket.ui.PlayerActivity;
 
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
@@ -24,9 +22,4 @@ public class PlayerActivityTest {
     public ActivityTestRule mActivityRule = new ActivityTestRule<>(
             PlayerActivity.class);
 
-    @Test
-    public void addToFirebase(){
-        PodcastSyncTask podcastSyncTask = new PodcastSyncTask();
-        podcastSyncTask.addToFirebase("this is a test");
-    }
 }

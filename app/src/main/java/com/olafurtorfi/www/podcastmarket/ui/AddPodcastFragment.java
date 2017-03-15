@@ -93,6 +93,7 @@ public class AddPodcastFragment extends DialogFragment {
 
         Context context = getContext();
         Intent intent = new Intent(context, PodcastSyncIntentService.class);
+        intent.setAction("addPodcast");
         intent.putExtra("urlString", text.toString());
         context.startService(intent);
     }

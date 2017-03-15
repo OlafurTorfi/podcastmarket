@@ -13,7 +13,6 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
-import com.olafurtorfi.www.podcastmarket.utilities.RealDataUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -175,6 +174,6 @@ public class PodcastSyncUtil {
     public static void startImmediateSync(@NonNull final Context context) {
 //        Intent intentToSyncImmediately = new Intent(context, PodcastSyncIntentService.class);
 //        context.startService(intentToSyncImmediately);
-        RealDataUtil.insertRealTestData(context);
+//        RealDataUtil.insertRealTestData(context);
     }
 }

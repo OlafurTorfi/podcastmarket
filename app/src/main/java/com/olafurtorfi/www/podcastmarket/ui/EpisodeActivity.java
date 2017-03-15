@@ -1,6 +1,7 @@
 package com.olafurtorfi.www.podcastmarket.ui;
 
 import android.app.DownloadManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -135,7 +136,18 @@ public class EpisodeActivity  extends ListActivity implements
     @Override
     public void onClick(EpisodeObject episode, String tag) {
         Log.d("Episode Activity", "On click.....");
+
         if(tag.equals(getString(R.string.download_episode_button_tag))){
+            boolean thisishack = true;
+            if(thisishack){
+                ContentValues eCv = new ContentValues();
+                eCv.put("path", "RohingjarVeraIlluga.mp3");
+                int rows = this.getContentResolver().update(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv,
+                        EpisodeContract.EpisodeEntry.COLUMN_PODCAST +
+                        " = ? and " + EpisodeContract.EpisodeEntry.COLUMN_TITLE + " = ? ", new String[]{episode.podcast, episode.title});
+                Log.d(TAG, "onClick updated " + 1 + " row with podcast " + episode.podcast + " and title " + episode.title);
+            }
+
             Log.d(TAG, "onClick: " + NetworkUtil.isDownloadManagerAvailable(this));
             if(NetworkUtil.isDownloadManagerAvailable(this)) {
                 Uri uri = Uri.parse(episode.fileUrl);

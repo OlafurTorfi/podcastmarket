@@ -19,8 +19,16 @@ public class PodcastSyncIntentService  extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String urlString = intent.getStringExtra("urlString");
         Log.d(TAG, "onHandleIntent: " + urlString);
+        String action = intent.getAction();
         if(urlString != null){
-            PodcastSyncTask.syncPodcast(this, urlString);
+            switch(action){
+                case "addPodcast":
+                    PodcastSyncTask.addPodcast(this,urlString);
+                    break;
+                default:
+                    PodcastSyncTask.syncPodcast(this, urlString);
+                    break;
+            }
         }
     }
 }

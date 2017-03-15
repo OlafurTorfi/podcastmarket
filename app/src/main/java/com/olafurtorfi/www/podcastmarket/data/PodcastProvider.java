@@ -539,7 +539,44 @@ public class PodcastProvider  extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new RuntimeException("Update not implemented");
+//        throw new RuntimeException("Update not implemented");
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rows = 0;
+        switch(sUriMatcher.match(uri)){
+            case CODE_PODCAST:
+                Log.v(TAG, "update podcast: " + uri.toString());
+                db.beginTransaction();
+                try {
+                    rows = db.update(PodcastContract.PodcastEntry.TABLE_NAME,values, selection,selectionArgs);
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                return rows;
+            case CODE_EPISODE:
+                Log.v(TAG, "update episode: " + uri.toString());
+                db.beginTransaction();
+                try {
+                    rows = db.update(EpisodeContract.EpisodeEntry.TABLE_NAME, values, selection, selectionArgs);
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                return rows;
+            case CODE_BREAKPOINT:
+                Log.v(TAG, "insert breakpoint: " + uri.toString());
+                db.beginTransaction();
+                try {
+                    rows = db.update(BreakpointContract.BreakpointEntry.TABLE_NAME, values, selection, selectionArgs);
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                return rows;
+            default:
+                Log.e(TAG, "insert: should not have reached its default method");
+                throw new RuntimeException("Method for following uri not implemented " + uri.toString());
+        }
     }
 
     /**

@@ -13,9 +13,11 @@ import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
 import com.olafurtorfi.www.podcastmarket.utilities.NetworkUtil;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -31,22 +33,54 @@ public class PodcastSyncTask {
         return "";
     }
     private static String TAG = "PodcastSynTask";
+
+    synchronized public static void addPodcast(Context context, String urlString) {
+
+        Log.d(TAG, "syncPodcast: try adding podcast");
+        try {
+            URL podcastRequestUrl = new URL(urlString);
+            Log.v(TAG, "syncPodcast: " + urlString);
+            String podcastResponse = NetworkUtil.getResponseFromHttpUrl(podcastRequestUrl);
+
+            //you can still change the format of the reader, but it's not recommended.
+            SyndFeedInput feedIn = new SyndFeedInput();
+
+            XmlReader xmlReader = new XmlReader(podcastRequestUrl);
+
+            SyndFeed feed = feedIn.build(xmlReader);
+
+
+            String title = feed.getTitle();
+            if (title == null){
+                new Toast(context).makeText(context, "unable to read podcast title", Toast.LENGTH_LONG).show();
+            } else {
+                String author = ifNullMakeEmptyString(feed.getAuthor());
+                String description = ifNullMakeEmptyString(feed.getDescription());
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference podcasts = database.getReference("podcasts");
+                String podcastKey = author+"-"+title;
+                podcastKey = podcastKey.replace(".","(dot)").replace("#","(hash)").replace("$","(dollar)").replace("[","(sqrBracketOpen)").replace("]","(sqrBracketClose)");
+                DatabaseReference podcast = podcasts.child(podcastKey);
+                DatabaseReference pa = podcast.child("author");
+                pa.setValue(author);
+                DatabaseReference pt = podcast.child("title");
+                pt.setValue(title);
+                DatabaseReference pu = podcast.child("url");
+                pu.setValue(urlString);
+                DatabaseReference pd = podcast.child("description");
+                pd.setValue(description);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FeedException e) {
+            e.printStackTrace();
+        }
+    }
     synchronized public static void syncPodcast(Context context, String urlString) {
 
         Log.d(TAG, "syncPodcast: try syncing podcast");
-//
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("teststuff");
-//        DatabaseReference testmo = myRef.child("testmo");
-//        myRef.setValue(urlString);
-//        testmo.setValue("stuff");
 
         try {
-            /*
-             * The getUrl method will return the URL that we need to get the podcast JSON for the
-             * podcast. It will decide whether to create a URL based off of the latitude and
-             * longitude or off of a simple location as a String.
-             */
             URL podcastRequestUrl = new URL(urlString);
             Log.v(TAG, "syncPodcast: " + urlString);
 
@@ -104,28 +138,17 @@ public class PodcastSyncTask {
                     eCv.put("date", eDate.getTime());
                     eCv.put("author", eAuthor);
                     // this is a hack
-//                    eCv.put("path", "RohingjarVeraIlluga.mp3");
+//                    ContentValues eCv = new ContentValues();
+                    //eCv.put("path", "RohingjarVeraIlluga.mp3");
 
                     context.getContentResolver().insert(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv);
                     Log.v(TAG, "syncPodcast: eTitle:"+eTitle+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate + ", eAuthor: " + eAuthor+", podcast:"+title);
 
                 }
 
-                Log.d(TAG, "syncPodcast: eTitle:"+title+", eDescription:"+description+", eUri:"+urlString + ", eDate: "+eDate + ", eAuthor: " + author);
+                Log.v(TAG, "syncPodcast: eTitle:"+title+", eDescription:"+description+", eUri:"+urlString + ", eDate: "+eDate + ", eAuthor: " + author);
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference podcasts = database.getReference("podcasts");
-                String podcastKey = author+"-"+title;
-                podcastKey = podcastKey.replace(".","(dot)").replace("#","(hash)").replace("$","(dollar)").replace("[","(sqrBracketOpen)").replace("]","(sqrBracketClose)");
-                DatabaseReference podcast = podcasts.child(podcastKey);
-                DatabaseReference pa = podcast.child("author");
-                pa.setValue(author);
-                DatabaseReference pt = podcast.child("title");
-                pt.setValue(title);
-                DatabaseReference pu = podcast.child("url");
-                pu.setValue(urlString);
-                DatabaseReference pd = podcast.child("description");
-                pd.setValue(description);
+
 
                 }
 
