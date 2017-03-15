@@ -9,9 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.olafurtorfi.www.podcastmarket.R;
+import com.olafurtorfi.www.podcastmarket.data.EpisodeContract;
+import com.olafurtorfi.www.podcastmarket.data.PodcastContract;
 
 /**
  * Created by olitorfi on 15/02/2017.
@@ -68,7 +72,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
         String title = mCursor.getString(PodcastsActivity.INDEX_PODCAST_TITLE);
         String author = mCursor.getString(PodcastsActivity.INDEX_PODCAST_AUTHOR);
 
-        Log.v("Podcast Adapter", "position "+ position + ", Cursor value " + title);
+        Log.d("Podcast Adapter", "position "+ position + ", Cursor value " + title);
         holder.podcastTitleView.setText(title);
         holder.podcastAuthorView.setText(author);
     }
@@ -103,13 +107,15 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
         final TextView podcastAuthorView;
 
         final TextView podcastTitleView;
+        final ImageButton unsubscribeButton;
 
         PodcastAdapterViewHolder(View view) {
             super(view);
             podcastTitleView = (TextView) view.findViewById(R.id.podcast_title);
             podcastAuthorView = (TextView) view.findViewById(R.id.podcast_author);
+            unsubscribeButton = (ImageButton) view.findViewById(R.id.unsubscribe_button);
 //            iconView = (ImageView) view.findViewById(R.id.podcast_icon);
-
+            unsubscribeButton.setOnClickListener(this);
             view.setOnClickListener(this);
         }
 
@@ -122,11 +128,25 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.PodcastA
          */
         @Override
         public void onClick(View v) {
-            Log.v("Podcast Adapter", v.toString() + " clicked......");
+
+            String tag = (String) v.getTag();
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
             String podcast = mCursor.getString(PodcastsActivity.INDEX_PODCAST_TITLE);
-            mClickHandler.onClick(podcast);
+            Log.v("Podcast Adapter", v.toString() + " clicked, with tag " + tag + ", podcast title is: " + podcast);
+            switch (tag){
+                case "unsubscribeButton":
+                    long id = mCursor.getLong(PodcastsActivity.INDEX_PODCAST_ID);
+                    mContext.getContentResolver().delete(PodcastContract.PodcastEntry.CONTENT_URI, PodcastContract.PodcastEntry.COLUMN_ID + " = ?",new String[]{String.valueOf(id)});
+                    mContext.getContentResolver().delete(EpisodeContract.EpisodeEntry.CONTENT_URI, EpisodeContract.EpisodeEntry.COLUMN_PODCAST + " = ?",new String[]{podcast});
+                    new Toast(mContext).makeText(mContext,podcast + " removed from subscriptions and episodes deleted",Toast.LENGTH_LONG).show();
+                    break;
+                case "podcastListItem":
+                    mClickHandler.onClick(podcast);
+                    break;
+            }
+            mCursor.close();
+
         }
     }
 }

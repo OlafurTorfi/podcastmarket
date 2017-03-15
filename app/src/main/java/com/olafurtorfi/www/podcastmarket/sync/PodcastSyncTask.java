@@ -123,7 +123,6 @@ public class PodcastSyncTask {
                 String eAuthor = "";
                 Date eDate = null;
 
-
                 for (SyndEntry entry : entries){
                     eTitle = ifNullMakeEmptyString(entry.getTitle());
                     eDescription = ifNullMakeEmptyString(entry.getDescription().getValue());
@@ -140,17 +139,12 @@ public class PodcastSyncTask {
                     // this is a hack
 //                    ContentValues eCv = new ContentValues();
                     //eCv.put("path", "RohingjarVeraIlluga.mp3");
-
                     context.getContentResolver().insert(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv);
                     Log.v(TAG, "syncPodcast: eTitle:"+eTitle+", eDescription:"+eDescription+", eUri:"+eUri + ", eDate: "+eDate + ", eAuthor: " + eAuthor+", podcast:"+title);
 
                 }
-
                 Log.v(TAG, "syncPodcast: eTitle:"+title+", eDescription:"+description+", eUri:"+urlString + ", eDate: "+eDate + ", eAuthor: " + author);
-
-
-
-                }
+            }
 
         } catch (Exception e) {
             /* Server probably invalid */

@@ -552,7 +552,7 @@ public class PodcastProvider  extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
-                return rows;
+                break;
             case CODE_EPISODE:
                 Log.v(TAG, "update episode: " + uri.toString());
                 db.beginTransaction();
@@ -562,7 +562,7 @@ public class PodcastProvider  extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
-                return rows;
+                break;
             case CODE_BREAKPOINT:
                 Log.v(TAG, "insert breakpoint: " + uri.toString());
                 db.beginTransaction();
@@ -572,11 +572,13 @@ public class PodcastProvider  extends ContentProvider {
                 } finally {
                     db.endTransaction();
                 }
-                return rows;
+                break;
             default:
                 Log.e(TAG, "insert: should not have reached its default method");
                 throw new RuntimeException("Method for following uri not implemented " + uri.toString());
         }
+        getContext().getContentResolver().notifyChange(uri,null);
+        return rows;
     }
 
     /**

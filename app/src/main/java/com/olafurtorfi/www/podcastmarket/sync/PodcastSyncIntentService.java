@@ -25,6 +25,8 @@ public class PodcastSyncIntentService  extends IntentService {
                 case "addPodcast":
                     PodcastSyncTask.addPodcast(this,urlString);
                     break;
+                case "subscribe":
+                    PodcastSyncTask.syncPodcast(this,urlString);
                 default:
                     PodcastSyncTask.syncPodcast(this, urlString);
                     break;
