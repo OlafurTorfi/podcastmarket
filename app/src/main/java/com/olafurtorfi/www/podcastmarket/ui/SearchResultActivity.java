@@ -48,7 +48,6 @@ public class SearchResultActivity extends ListActivity {
                     list[count] = po;
                     count++;
                     Log.d(TAG, "onDataChange: " + ds.toString());
-                    Log.d(TAG, "onDataChange podcast: " + po.getTitle());
                 }
                 mAdapter.setList(list);
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;

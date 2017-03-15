@@ -14,8 +14,8 @@
     android:tag="podcastListItem">
     <TextView
         android:id="@+id/podcast_title"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/list_item_date_left_margin"
         android:layout_marginStart="@dimen/list_item_date_start_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -24,8 +24,8 @@
 
     <TextView
         android:id="@+id/podcast_author"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/secondary_text"
         app:layout_constraintLeft_toLeftOf="@+id/podcast_title"

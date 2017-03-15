@@ -34,6 +34,7 @@ public class BasicPodcastAdapter extends RecyclerView.Adapter<BasicPodcastAdapte
 
     public void setList(PodcastObject[] list){
         this.list = list;
+        notifyDataSetChanged();
     }
 
     @Override

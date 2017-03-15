@@ -72,7 +72,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.EpisodeA
             if(holder.episodeDescriptionView != null){
                 holder.episodeDescriptionView.setText(description);
             }
-            if(filePath == null){
+            if(filePath == null || filePath.equals("")){
                 holder.deleteEpisodeView.setVisibility(View.INVISIBLE);
                 holder.playNowView.setVisibility(View.INVISIBLE);
                 holder.downloadEpisodeView.setVisibility(View.VISIBLE);
@@ -151,6 +151,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.EpisodeA
             String fileUrl = mCursor.getString(EpisodeActivity.INDEX_EPISODE_FILE_URL);
             String author = mCursor.getString(EpisodeActivity.INDEX_EPISODE_AUTHOR);
 
+            Log.d(TAG, "onClick: " + title);
             EpisodeObject episodeObject = new EpisodeObject(title, description, podcast, filePath, fileUrl, author);
 
             mClickHandler.onClick(episodeObject, tag);

@@ -88,7 +88,7 @@ public class PodcastSyncTask {
             String podcastResponse = NetworkUtil.getResponseFromHttpUrl(podcastRequestUrl);
 
             /* Parse the JSON into a list of podcast values */
-            Log.v(TAG, "syncPodcast: response from url " + podcastResponse);
+//            Log.v(TAG, "syncPodcast: response from url " + podcastResponse);
 
 
             //you can still change the format of the reader, but it's not recommended.
@@ -98,7 +98,7 @@ public class PodcastSyncTask {
 
             SyndFeed feed = feedIn.build(xmlReader);
 
-            Log.v(TAG, "syncPodcast: " + feed);
+//            Log.v(TAG, "syncPodcast: " + feed);
 
             String author = ifNullMakeEmptyString(feed.getAuthor());
 

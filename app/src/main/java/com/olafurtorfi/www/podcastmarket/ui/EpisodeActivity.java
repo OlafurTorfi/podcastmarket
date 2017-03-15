@@ -180,7 +180,17 @@ public class EpisodeActivity  extends ListActivity implements
             } else {
                 new Toast(this).makeText(this, "download manager unavailable for android versions older than Gingerbread", Toast.LENGTH_LONG).show();
             }
-        } else if(tag.equals(getString(R.string.add_to_playlist_button_tag))){
+        } else if(tag.equals(getString(R.string.delete_episode_button_tag))){
+            boolean thisishack = true;
+            if(thisishack){
+                Log.d(TAG, "onClick: delete episode using hack");
+                ContentValues eCv = new ContentValues();
+                eCv.put("path", "");
+                int rows = this.getContentResolver().update(EpisodeContract.EpisodeEntry.CONTENT_URI, eCv,
+                        EpisodeContract.EpisodeEntry.COLUMN_PODCAST +
+                                " = ? and " + EpisodeContract.EpisodeEntry.COLUMN_TITLE + " = ? ", new String[]{episode.podcast, episode.title});
+                Log.d(TAG, "onClick updated " + 1 + " row with podcast " + episode.podcast + " and title " + episode.title);
+            }
 
         } else if(tag.equals(getString(R.string.play_button_tag))){
             Log.i("Episode Adapter", "play now clicked......");
