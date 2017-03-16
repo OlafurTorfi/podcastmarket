@@ -95,12 +95,9 @@ public class EpisodeActivity  extends ListActivity implements
         switch (loaderId) {
 
             case ID_EPISODE_LOADER:
-                /* URI for all rows of podcast data in our podcast table */
-//                Uri episodeQueryUri = EpisodeContract.EpisodeEntry.CONTENT_URI;
-                /* Sort order: Ascending by date */
                 String sortOrder = EpisodeContract.EpisodeEntry.COLUMN_TITLE + " ASC";
 
-                Log.i("EpisodeActivity", mUri.toString());
+                Log.v("EpisodeActivity", mUri.toString());
 
                 return new CursorLoader(this,
                         mUri,

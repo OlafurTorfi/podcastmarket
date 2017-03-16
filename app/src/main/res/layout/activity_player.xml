@@ -28,48 +28,36 @@
         android:layout_width="wrap_content"
         app:srcCompat="@mipmap/ic_skip_forward"
         android:id="@+id/skipForward"
-        android:layout_height="170dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/podcastLogo"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/podcastLogo" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/fastForward"
+        app:layout_constraintRight_toRightOf="@+id/fastForward" />
 
     <ImageButton
-        android:layout_width="76dp"
-        android:layout_height="170dp"
         app:srcCompat="@mipmap/ic_skip_backward"
-        android:id="@+id/skipBackward"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/podcastLogo"
-        android:layout_marginEnd="8dp"
+        android:id="@+id/imageButton"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
+        app:layout_constraintTop_toBottomOf="@+id/rewind"
+        app:layout_constraintLeft_toLeftOf="@+id/rewind" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_rewind"
         android:id="@+id/rewind"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/play"
-        android:layout_marginEnd="8dp"
+        tools:layout_editor_absoluteX="40dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_fast_forward"
         android:id="@+id/fastForward"
-        app:layout_constraintTop_toTopOf="@+id/play"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toRightOf="@+id/play"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.45" />
+        tools:layout_editor_absoluteX="272dp"
+        app:layout_constraintTop_toTopOf="@+id/pause" />
 
     <ImageButton
         app:srcCompat="@mipmap/ic_timer"
@@ -100,34 +88,22 @@
 
     <TextView
         android:text="TextView"
-        android:layout_width="311dp"
+        android:layout_width="312dp"
         android:id="@+id/description"
-        android:layout_height="50dp"
-        tools:layout_editor_absoluteX="37dp"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        android:layout_height="59dp"
+        tools:layout_editor_absoluteY="51dp"
+        tools:layout_editor_absoluteX="36dp" />
 
-    <ProgressBar
+    <SeekBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="329dp"
         android:layout_height="28dp"
-        android:id="@+id/progressBar"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/podcastLogo"
+        android:id="@+id/seekBar"
+        tools:layout_editor_absoluteY="263dp"
         android:layout_marginStart="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent" />
-
-    <ImageView
-        android:layout_width="170dp"
-        app:srcCompat="@android:drawable/btn_star"
-        android:id="@+id/podcastLogo"
-        android:layout_height="170dp"
-        app:layout_constraintTop_toTopOf="@+id/skipBackward"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -155,6 +131,30 @@
         app:layout_constraintTop_toBottomOf="@+id/pause"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="16dp" />
+
+    <ScrollView
+        android:layout_width="157dp"
+        android:layout_height="133dp"
+        tools:layout_editor_absoluteY="117dp"
+        tools:layout_editor_absoluteX="39dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <ScrollView
+        android:layout_height="133dp"
+        tools:layout_editor_absoluteY="117dp"
+        tools:layout_editor_absoluteX="196dp"
+        android:layout_width="152dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>
 </layout>

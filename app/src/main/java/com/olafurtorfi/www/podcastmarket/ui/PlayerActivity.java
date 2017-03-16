@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 
 import com.olafurtorfi.www.podcastmarket.R;
 import com.olafurtorfi.www.podcastmarket.data.BreakpointContract;
@@ -38,12 +40,17 @@ public class PlayerActivity extends AppCompatActivity{
     private ImageButton pauseButton;
     private ImageButton startJumpButton;
     private ImageButton stopJumpButton;
+    private SeekBar seekBar;
 
     private static final String TAG = "PlayerActivity";
     private MediaPlayer mPlayer;
     private Cursor breakpoints;
 
     private Timer timer;
+    private boolean prepared = false;
+
+    private Handler mHandler = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,7 @@ public class PlayerActivity extends AppCompatActivity{
         playButton = (ImageButton) findViewById(R.id.play);
         pauseButton = (ImageButton) findViewById(R.id.pause);
         startJumpButton = (ImageButton) findViewById(R.id.startJump);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
         stopJumpButton = (ImageButton) findViewById(R.id.stopJump);
         pauseButton.setVisibility(View.INVISIBLE);
         stopJumpButton.setVisibility(View.INVISIBLE);
@@ -75,7 +83,11 @@ public class PlayerActivity extends AppCompatActivity{
         //bind data to the view
         displayEpisodeInfo(episode);
 
-
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         //initialize media player
         mPlayer = new MediaPlayer();
@@ -86,6 +98,26 @@ public class PlayerActivity extends AppCompatActivity{
                 return false;
             }
         });
+
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.d(TAG, "onCompletion: media playing finished");;
+            }
+        });
+        mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                seekBar.setMax(mPlayer.getDuration());
+                Log.d(TAG, "onPrepared: ");
+                if(breakpoints.getCount() > 0){
+                    breakpoints.moveToFirst();
+                    scheduleBreaks();
+                }
+                prepared = true;
+                mp.start();
+            }
+        });
         if(filePath != null){
             try {
                 AssetFileDescriptor descriptor = getAssets().openFd(filePath);
@@ -93,10 +125,42 @@ public class PlayerActivity extends AppCompatActivity{
                 long end = descriptor.getLength();
                 mPlayer.setDataSource(descriptor.getFileDescriptor(), start, end);
                 mPlayer.setVolume(1.0f, 1.0f);
+                play(null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        // initialize seek bar
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.d(TAG, "onProgressChanged: progress set to " + progress);
+//                mPlayer.seekTo(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Log.d(TAG, "onStartTrackingTouch: ");
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.d(TAG, "onStopTrackingTouch: ");
+                mPlayer.seekTo(seekBar.getProgress());
+            }
+        });
+        //Make sure you update Seekbar on UI thread
+        PlayerActivity.this.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                if(mPlayer != null){
+                    seekBar.setProgress(mPlayer.getCurrentPosition());
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        });
 
         // get breakpoints
         breakpoints = getContentResolver()
@@ -113,20 +177,13 @@ public class PlayerActivity extends AppCompatActivity{
                 " of type : " + breakpoints.getInt(breakpoints.getColumnIndex(BreakpointContract.BreakpointEntry.COLUMN_START)));
             }
         }
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
+            stop();
             Intent episodeIntent = new Intent(this, EpisodeActivity.class);
             Uri uriForPodcastClicked = EpisodeContract.EpisodeEntry.buildEpisodeUriWithPodcast(episode.podcast);
             episodeIntent.setData(uriForPodcastClicked);
@@ -201,25 +258,26 @@ public class PlayerActivity extends AppCompatActivity{
         Log.d(TAG, "play: clicked" );
         pauseButton.setVisibility(View.VISIBLE);
         playButton.setVisibility(View.INVISIBLE);
-        if(!mPlayer.isLooping()){
-            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    Log.d(TAG, "onPrepared: ");
-                    if(breakpoints.getCount() > 0){
-                        breakpoints.moveToFirst();
-                        scheduleBreaks();
-                    }
-                    mp.start();
-                }
-            });
+//        if(!mPlayer.isLooping()){
             try {
-                mPlayer.prepare();
+                if (prepared){
+                    Log.d(TAG, "play: is prepared");
+                    mPlayer.start();
+                }
+                else{
+                    mPlayer.prepare();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+//        }
+    }
+    public void stop(){
+        pauseButton.setVisibility(View.VISIBLE);
+        playButton.setVisibility(View.INVISIBLE);
+        if(mPlayer.isPlaying()){
+            mPlayer.stop();
         }
-
     }
 
     public void pause(View view){
